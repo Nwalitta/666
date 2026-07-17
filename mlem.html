@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet 666</title>
+    <style>
+        /* Base styling and black background */
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            text-align: center;
+        }
+        a3 {
+            color: #ffffff5a;
+        }
+        /* Container transitions from centered to split layout */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 900px;
+            height: 100%;
+            transition: all 1s ease-in-out;
+            gap: 50px; /* Space between CD and content when split */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* CD Wrapper to handle positioning and spinning independently */
+        .cd-wrapper {
+            position: relative; 
+            width: 220px; /* Maintain your strict dimensions */
+            height: 220px;
+            transition: all 1s ease-in-out;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        /* Square CD Image Styling & Spin Animation */
+        .cd-image {
+            width: 220px;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 4px; 
+            transition: transform 0.5s ease;
+            position: relative;
+            z-index: 3; /* Keep CD on very top layer */
+        }
+
+        /* Trigger dynamic spin rotation state class */
+        .cd-image.spinning {
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* When clicked: Container aligns items horizontally, wrapper shifts left */
+        .container.split-layout {
+            justify-content: center;
+        }
+
+        .cd-wrapper.shift-left {
+            cursor: default;
+        }
+
+        /* Content layout (Initially hidden and collapsed to the right) */
+        .content {
+            opacity: 0;
+            max-width: 0;
+            overflow: hidden;
+            transform: translateX(30px);
+            transition: opacity 1s ease-in-out, max-width 1s ease-in-out, transform 1s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: left; /* Text aligns left nicely next to the CD */
+        }
+
+        /* Class added via JavaScript to reveal content and expand its space */
+        .content.reveal {
+            opacity: 1;
+            max-width: 450px;
+            transform: translateX(0);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0 0 5px 0;
+            letter-spacing: 2px;
+        }
+
+        p {
+            color: #ccc;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin: 0 0 25px 0;
+        }
+
+        /* Audio Player Styling */
+        .audio-container {
+            width: 100%;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        /* Custom Song Progress Line */
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #333;
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #fff;
+            border-radius: 2px;
+            transition: width 0.1s linear;
+        }
+
+        /* Custom Sound Control Slider */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 50%;
+        }
+
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 3px;
+            background: #555;
+            outline: none;
+            border-radius: 2px;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* Social Media Links Layout */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        li {
+            margin: 15px 0;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: inline-block;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        a:hover {
+            color: #f90cca; 
+            transform: translateY(-2px);
+        }
+
+        /* --- MOBILE RESPONSIVENESS MEDIA QUERY --- */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto; /* Allow scrolling down if content overflows on small screens */
+                align-items: flex-start;
+                padding: 40px 0;
+            }
+
+            .container {
+                flex-direction: column; /* Stack vertically instead of side-by-side */
+                gap: 30px;
+                height: auto;
+            }
+
+            .cd-wrapper, .cd-image {
+                width: 180px; /* Make CD slightly more compact on mobile views */
+                height: 180px;
+            }
+
+            .content {
+                text-align: center; /* Center-align text elements for cleaner presentation */
+                align-items: center;
+                transform: translateY(30px); /* Transition upwards instead of from the right */
+            }
+
+            .content.reveal {
+                max-width: 100%;
+                transform: translateY(0);
+            }
+
+            .audio-container {
+                align-items: center;
+            }
+
+            .volume-container {
+                justify-content: center;
+                width: 70%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="mainContainer">
+        
+        <div class="cd-wrapper" id="cdWrapper">
+            <img src="cd.jpg" class="cd-image" id="cdBtn" alt="CD Case">
+        </div>
+
+        <div class="content" id="mainContent">
+            <h1>sweet 666</h1>
+            <p>I'm Nawal, nice to meet you<br>everything you need to know</p>
+            <a3>now playing: HIM - Gone With A Sin</a3>
+            <div class="audio-container">
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="volume-container">
+                    <span style="font-size: 0.8rem; color: #aaa;">🔊</span>
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0">
+                </div>
+            </div>
+
+            <ul>
+                <li><a href="https://www.twitch.tv/nvwal" target="_blank">twitch</a></li>
+                <li><a href="https://x.com/RozeLatte" target="_blank">X</a></li>
+                <li><a href="https://www.instagram.com/nawvll/" target="_blank">instagram</a></li>
+                <li><a href="https://discord.com/invite/tcKJVcmu9S" target="_blank">discord</a></li>
+                <li><a href="https://www.rankone.global/nawal" target="_blank">rankOne</a></li>
+                <li><a href="https://tip.dokan.sa/nvwal" target="_blank">دكان تب</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <audio id="bgAudio" src="audio.mp3" preload="auto" ></audio>
+
+    <script>
+        const cdBtn = document.getElementById('cdBtn');
+        const cdWrapper = document.getElementById('cdWrapper');
+        const mainContainer = document.getElementById('mainContainer');
+        const mainContent = document.getElementById('mainContent');
+        const audio = document.getElementById('bgAudio');
+        const progressFill = document.getElementById('progressFill');
+        const progressBar = document.getElementById('progressBar');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        // Handle the Layout Split & Audio Trigger
+        cdBtn.addEventListener('click', () => {
+            mainContainer.classList.add('split-layout');
+            cdWrapper.classList.add('shift-left');
+            mainContent.classList.add('reveal');
+            
+            cdBtn.classList.add('spinning');
+            
+            audio.play().catch(error => {
+                console.log("Audio playback waiting for action.", error);
+            });
+        });
+
+        // Update progress bar tracking line
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const percentage = (audio.currentTime / audio.duration) * 100;
+                progressFill.style.width = percentage + '%';
+            }
+        });
+
+        // Skip features on the progress track line
+        progressBar.addEventListener('click', (e) => {
+            const rect = progressBar.getBoundingClientRect();
+            const clickPosition = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = clickPosition * audio.duration;
+        });
+
+        // Handle Volume Slider interaction
+        volumeSlider.addEventListener('input', (e) => {
+            if(audio.muted) audio.muted = false;
+            audio.volume = e.target.value;
+        });
+    </script>
+
+</body>
+</html>
