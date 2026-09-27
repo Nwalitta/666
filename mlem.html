@@ -21,7 +21,7 @@
         a3 {
             color: #ffffff5a;
         }
-        /* Container transitions from centered to split layout */
+        /* Container starting directly in split layout */
         .container {
             display: flex;
             justify-content: center;
@@ -30,7 +30,7 @@
             max-width: 900px;
             height: 100%;
             transition: all 1s ease-in-out;
-            gap: 50px; /* Space between CD and content when split */
+            gap: 50px; /* Space between CD and content */
             padding: 20px;
             box-sizing: border-box;
         }
@@ -38,7 +38,7 @@
         /* CD Wrapper to handle positioning and spinning independently */
         .cd-wrapper {
             position: relative; 
-            width: 220px; /* Maintain your strict dimensions */
+            width: 220px; /* Maintain strict dimensions */
             height: 220px;
             transition: all 1s ease-in-out;
             cursor: pointer;
@@ -69,33 +69,17 @@
             to { transform: rotate(360deg); }
         }
 
-        /* When clicked: Container aligns items horizontally, wrapper shifts left */
-        .container.split-layout {
-            justify-content: center;
-        }
-
-        .cd-wrapper.shift-left {
-            cursor: default;
-        }
-
-        /* Content layout (Initially hidden and collapsed to the right) */
+        /* Content layout (Visible by default alongside the CD) */
         .content {
-            opacity: 0;
-            max-width: 0;
+            opacity: 1;
+            max-width: 450px;
             overflow: hidden;
-            transform: translateX(30px);
+            transform: translateX(0);
             transition: opacity 1s ease-in-out, max-width 1s ease-in-out, transform 1s ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: left; /* Text aligns left nicely next to the CD */
-        }
-
-        /* Class added via JavaScript to reveal content and expand its space */
-        .content.reveal {
-            opacity: 1;
-            max-width: 450px;
-            transform: translateX(0);
         }
 
         h1 {
@@ -223,10 +207,6 @@
             .content {
                 text-align: center; /* Center-align text elements for cleaner presentation */
                 align-items: center;
-                transform: translateY(30px); /* Transition upwards instead of from the right */
-            }
-
-            .content.reveal {
                 max-width: 100%;
                 transform: translateY(0);
             }
@@ -260,7 +240,7 @@
                 </div>
                 <div class="volume-container">
                     <span style="font-size: 0.8rem; color: #aaa;">🔊</span>
-                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0">
+                    <input type="range" class="volume-slider" id="volumeSlider" min="0" max="1" step="0.05" value="0.5">
                 </div>
             </div>
 
@@ -274,29 +254,35 @@
         </div>
     </div>
 
-    <audio id="bgAudio" src="audio.mp3" preload="auto" ></audio>
+    <audio id="bgAudio" src="audio.mp3" preload="auto"></audio>
 
     <script>
         const cdBtn = document.getElementById('cdBtn');
-        const cdWrapper = document.getElementById('cdWrapper');
-        const mainContainer = document.getElementById('mainContainer');
-        const mainContent = document.getElementById('mainContent');
         const audio = document.getElementById('bgAudio');
         const progressFill = document.getElementById('progressFill');
         const progressBar = document.getElementById('progressBar');
         const volumeSlider = document.getElementById('volumeSlider');
 
-        // Handle the Layout Split & Audio Trigger
+        // Set initial volume
+        audio.volume = volumeSlider.value;
+
+        // Toggle playback on CD click
         cdBtn.addEventListener('click', () => {
-            mainContainer.classList.add('split-layout');
-            cdWrapper.classList.add('shift-left');
-            mainContent.classList.add('reveal');
-            
-            cdBtn.classList.add('spinning');
-            
-            audio.play().catch(error => {
-                console.log("Audio playback waiting for action.", error);
-            });
+            if (audio.paused) {
+                audio.play().then(() => {
+                    cdBtn.classList.add('spinning');
+                }).catch(error => {
+                    console.log("Audio playback error:", error);
+                });
+            } else {
+                audio.pause();
+                cdBtn.classList.remove('spinning');
+            }
+        });
+
+        // Stop rotation when audio ends
+        audio.addEventListener('ended', () => {
+            cdBtn.classList.remove('spinning');
         });
 
         // Update progress bar tracking line
@@ -316,7 +302,7 @@
 
         // Handle Volume Slider interaction
         volumeSlider.addEventListener('input', (e) => {
-            if(audio.muted) audio.muted = false;
+            if (audio.muted) audio.muted = false;
             audio.volume = e.target.value;
         });
     </script>
